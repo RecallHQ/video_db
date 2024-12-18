@@ -1,7 +1,7 @@
 import streamlit as st
 from firestore_db import FirestoreHandler, service_account_json
 import streamlit.components.v1 as components
-from utils import fetch_youtube_metadata, sanitize_url, get_collection_uuid, invalidate_cache
+from utils import fetch_youtube_metadata, sanitize_url, get_collection_uuid, invalidate_cache, TEST_COLLECTION, FIRESTORE_COLLECTION
 
 
 
@@ -22,7 +22,7 @@ st.set_page_config(
 
 # Initialize firebase
 if 'firestore' not in st.session_state:
-    st.session_state.firestore = FirestoreHandler("test_collection", service_account_json)
+    st.session_state.firestore = FirestoreHandler(FIRESTORE_COLLECTION, service_account_json)
 
 
 st.title('VideoIndex Dataset Tool')

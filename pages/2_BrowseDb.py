@@ -1,13 +1,14 @@
 import streamlit as st
 from firestore_db import FirestoreHandler, service_account_json
-from utils import invalidate_cache
+from utils import invalidate_cache, FIRESTORE_COLLECTION, TEST_COLLECTION
 from streamlit_js_eval import streamlit_js_eval
 
 
 st.title("Browse the Database")
 # Initialize firebase
 if 'firestore' not in st.session_state:
-    st.session_state.firestore = FirestoreHandler("test_collection", service_account_json)
+    # change to TEST_COLLECTION for TESTING
+    st.session_state.firestore = FirestoreHandler(FIRESTORE_COLLECTION, service_account_json)
 
 fs_handler = st.session_state.firestore
 

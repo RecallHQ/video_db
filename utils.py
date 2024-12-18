@@ -3,6 +3,8 @@ import datetime
 
 import streamlit as st
 
+FIRESTORE_COLLECTION = "videoindex_db_1"
+TEST_COLLECTION = "test_collection"
 
 LLMCOURSE_VIDEO_ENTRIES = [
     
