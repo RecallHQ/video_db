@@ -2,6 +2,7 @@ import streamlit as st
 from firestore_db import FirestoreHandler, service_account_json
 import streamlit.components.v1 as components
 from utils import fetch_youtube_metadata, sanitize_url, get_collection_uuid, invalidate_cache, TEST_COLLECTION, FIRESTORE_COLLECTION
+from utils import time_to_seconds, seconds_to_time
 
 
 
@@ -10,7 +11,6 @@ def clear_form():
     st.session_state["query"] = ""
     st.session_state["answer"] = ""
     st.session_state["timestamp_pairs"] =[]
-
 
 
 
@@ -32,7 +32,14 @@ video_url = st.text_input("Enter video URL:", "", key="video_url")
 if video_url:
     print(" video url = ", video_url)
     video_url = sanitize_url(video_url)
-    st.video(video_url)
+    st.markdown(f"""
+            <iframe width="560" height="315" 
+            src={video_url} title="YouTube video player"
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media;
+                gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>   
+
+    """,  unsafe_allow_html=True)
     print("sanitized video url = ", video_url)
     metadata = fetch_youtube_metadata(video_url)
 
@@ -42,11 +49,14 @@ answer = st.text_area("Answer", "", key="answer")
 # Add a text input for the video URL
 modality = st.selectbox(
     "The answer requires information from:",
-    ("Audio only", "Images", "Video segment"),
+    ("Audio only", "Images and audio", "Video segment"),
     index=None,
     placeholder="Modality of information needed to answer the question...",
     key="modality"
 )
+st.text("""Modality of answer helps categorize if the answer can be purely determined from audio only,
+         or if it requires textual parsing of an image, 
+        or if the answer requires information extraction from a sequence of images (video segment) --- such as tracking an object.""")
 st.write("You selected:", modality)
 # Container for timestamp pairs
 timestamp_pairs = []
@@ -63,9 +73,16 @@ if st.button("Add Timestamp Interval"):
 for i, pair in enumerate(st.session_state.timestamp_pairs):
     col1, col2, col3 = st.columns([2,2,1])
     with col1:
-        pair["start"] = st.text_input(f"Start timestamp {i+1} (in seconds):", pair["start"], key=f"start_{i}")
+        # ts_s = st.text_input(f"Start timestamp {i+1} (in seconds):", pair["start"], key=f"start_{i}")
+        ts_s = st.text_input(f"Start timestamp {i+1} (in seconds):", "0",  key=f"start_{i}")
+        print(f"start ts = {ts_s}")
+        pair["start"] = time_to_seconds(ts_s)
     with col2:
-        pair["end"] = st.text_input(f"End timestamp {i+1} (in seconds):", pair["end"], key=f"end_{i}")
+        # ts_e= st.text_input(f"End timestamp {i+1} (in seconds):", pair["end"], key=f"end_{i}")
+        ts_e= st.text_input(f"End timestamp {i+1} (in seconds):", "1", key=f"end_{i}")
+        print(f"end ts = {ts_e}")
+        pair["end"] = time_to_seconds(ts_e)
+        st.text(f"{ts_s} to {ts_e} ")
     # Add play button for this timestamp interval
     if st.button(f"Play {pair['start']}-{pair['end']}s", key=f"play_{i}"):
         # Format video URL for specific timestamp
@@ -81,7 +98,6 @@ for i, pair in enumerate(st.session_state.timestamp_pairs):
             else:
                 # For direct video files, use as is
                 timestamped_url = video_url
-            orig_url = "https://www.youtube.com/embed/OOdtmCMSOo4?si=N2pyYNjpWwMyymbM"
             print(f"timestamped url = {timestamped_url}")
             # Display video starting at timestamp
             st.markdown(f"""

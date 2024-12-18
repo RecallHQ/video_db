@@ -10,6 +10,58 @@ LLMCOURSE_VIDEO_ENTRIES = [
     
 ]
 
+
+def time_to_seconds(time_str):
+    """
+    Convert a time string in the format HH:MM:SS, MM:SS, or SS into total seconds.
+
+    Parameters:
+        time_str (str): Time in the format 'HH:MM:SS', 'MM:SS', or 'SS'.
+
+    Returns:
+        int: Total seconds.
+    """
+
+    if time_str.isdigit():
+        return int(time_str)
+
+    try:
+        parts = list(map(int, time_str.split(':')))
+        if len(parts) == 3:  # HH:MM:SS
+            hours, minutes, seconds = parts
+        elif len(parts) == 2:  # MM:SS
+            hours, minutes, seconds = 0, *parts
+        elif len(parts) == 1:  # SS
+            hours, minutes, seconds = 0, 0, parts[0]
+        else:
+            return 0
+        return hours * 3600 + minutes * 60 + seconds
+    except ValueError:
+        return 0
+        
+def seconds_to_time(seconds):
+    """
+    Convert a number of seconds into a time string in the format HH:MM:SS, MM:SS, or SS.
+
+    Parameters:
+        seconds (int): Total seconds.
+
+    Returns:
+        str: Time string in the appropriate format.
+    """
+    if seconds < 0:
+        raise ValueError("Seconds cannot be negative")
+
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+
+    if hours > 0:
+        return f"{hours:02}:{minutes:02}:{seconds:02}"
+    elif minutes > 0:
+        return f"{minutes:02}:{seconds:02}"
+    else:
+        return f"{seconds:02}"
+
 def invalidate_cache():
     if 'cache_value' not in st.session_state:
         st.session_state.cache_value = 0
