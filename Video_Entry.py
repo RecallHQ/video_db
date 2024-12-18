@@ -95,7 +95,7 @@ for i, pair in enumerate(st.session_state.timestamp_pairs):
     with col3:
         if st.button("Remove", key=f"remove_{i}"):
             st.session_state.timestamp_pairs.pop(i)
-            st.experimental_rerun()
+    
 
     # Add save button
 if st.button("Save to Database"):
