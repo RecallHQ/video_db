@@ -29,6 +29,7 @@ for d in fetch_all(cache_input=st.session_state.cache_value):
         answer = value["answer"]
         ts = value["timestamps"]
         status = value.get("status",  "valid")
+        modality = value.get("modality", "Video segment")
 
         st.text(f"Video Url: {video_url}")
         st.text(f"Query: {query}")

@@ -40,7 +40,14 @@ query = st.text_area("Query", "", key="query")
 
 answer = st.text_area("Answer", "", key="answer")
 # Add a text input for the video URL
-
+modality = st.selectbox(
+    "The answer requires information from:",
+    ("Audio only", "Images", "Video segment"),
+    index=None,
+    placeholder="Modality of information needed to answer the question...",
+    key="modality"
+)
+st.write("You selected:", modality)
 # Container for timestamp pairs
 timestamp_pairs = []
 
@@ -98,6 +105,7 @@ if st.button("Save to Database"):
         "answer": answer,
         "video_url": video_url,
         "status": "valid",
+        "modality": modality,
         "timestamps": [
             {
                 "start": pair["start"],
