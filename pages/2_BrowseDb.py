@@ -43,6 +43,7 @@ for d in fetch_all(cache_input=st.session_state.cache_value):
             fs_handler.update_document(key, value)
             invalidate_cache()
             streamlit_js_eval(js_expressions="parent.window.location.reload()")
+            st.rerun()
        
         st.divider()
 
